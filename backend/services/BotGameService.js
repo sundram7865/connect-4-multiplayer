@@ -1,116 +1,128 @@
-import { User, AiGame, GameData } from '../models/ConnectModels.js';
-import { Op } from 'sequelize';
+import { User, BotGame, GameData } from '../models/ConnectModels.js'
+import { Op } from 'sequelize'
 
-/**
- * Update a user's total AI games stats based on game result.
- */
-export async function updateTotalGames(data, aiGames) {
-    try {
-        const games = aiGames.getDataValue('aiGames');
-        const levelKey = data.level.toLowerCase(); // trivial, medium, hard
+// updates the stats of a player in bot mode
+export async function updateTotalGames(data, botGames) {
 
-        if (!games[levelKey]) {
-            console.error(`Invalid game level: ${data.level}`);
-            return;
-        }
-
-        let gamesLevel = games[levelKey];
-        let total = gamesLevel.total;
-
-        const updates = { total: ++total };
-
-        if (data.winner === 'You') {
-            updates.win = ++gamesLevel.win;
-        } else if (data.winner === 'Ai') {
-            updates.defeat = ++gamesLevel.defeat;
-        } else if (data.winner === 'Draw') {
-            updates.draw = ++gamesLevel.draw;
-        }
-
-        await aiGames.update({
-            aiGames: {
+    const games = botGames.getDataValue('botGames')
+    let gamesLevel
+    let level
+    if (data.level === "Trivial") {
+        gamesLevel = games.trivial
+        level = "trivial"
+    } else if (data.level === "Medium") {
+        gamesLevel = games.medium
+        level = "medium"
+    } else if (data.level === "Hard") {
+        gamesLevel = games.hard
+        level = "hard"
+    }
+    let total = gamesLevel.total
+    if (data.winner === "You") {
+        let win = gamesLevel.win
+        await botGames.update({
+            botGames: {
                 ...games,
-                [levelKey]: { ...gamesLevel, ...updates }
+                [level]: {
+                    ...gamesLevel,
+                    total: ++total,
+                    win: ++win
+                }
             }
-        });
-    } catch (error) {
-        console.error('Error updating total AI games:', error);
+        })
+    } else if (data.winner === "Bot") {
+        let defeat = gamesLevel.defeat
+        await botGames.update({
+            botGames: {
+                ...games,
+                [level]: {
+                    ...gamesLevel,
+                    total: ++total,
+                    defeat: ++defeat
+                }
+            }
+        })
+    } else if (data.winner === "Draw") {
+        let draw = gamesLevel.draw
+        await botGames.update({
+            botGames: {
+                ...games,
+                [level]: {
+                    ...gamesLevel,
+                    total: ++total,
+                    draw: ++draw
+                }
+            }
+        })
     }
 }
 
-/**
- * Add a new AI game to history and update player stats.
- */
-export async function addAiGame(data, username) {
+// adds a game with bot in history of a user
+export async function addBotGame(data, username) {
     try {
-        await AiGame.create({
+        await BotGame.create({
             level: data.level,
             firstplayer: data.firstplayer,
             winner: data.winner,
             datetime: data.datetime,
             UserUsername: username
-        });
-
-        const aiGames = await User.findOne({ where: { username } });
-        if (aiGames) {
-            await updateTotalGames(data, aiGames);
-        }
+        })
+        const botGames = await User.findOne({
+            where: { username: username }
+        })
+        await updateTotalGames(data, botGames)
     } catch (error) {
-        console.error('Error adding AI game:', error);
+        console.log(error)
     }
 }
 
-/**
- * Remove all AI games for a user (or orphaned games).
- */
-export async function removeAiGames(username) {
+// removes all games with bot for a specific username
+export async function removeBotGames(username) {
     try {
-        await AiGame.destroy({
+        await BotGame.destroy({
             where: {
                 [Op.or]: [
                     { UserUsername: username },
                     { UserUsername: null }
                 ]
             }
-        });
+        })
     } catch (error) {
-        console.error('Error removing AI games:', error);
+        console.log(error)
     }
 }
 
-/**
- * Get all AI games for a user.
- */
-export async function findAiGames(username) {
+// finds bot games of a user
+export async function findBotGames(username) {
     try {
-        return await AiGame.findAll({
+        const userGames = await BotGame.findAll({
             where: { UserUsername: username },
             order: [['datetime', 'DESC']],
             raw: true
-        });
+        })
+        return userGames
     } catch (error) {
-        console.error('Error finding AI games:', error);
+        console.log(error)
     }
 }
 
-/**
- * Get total AI game stats for a user.
- */
-export async function findTotalAiGames(username) {
+// finds the stats of a user for bot games
+export async function findTotalBotGames(username) {
     try {
-        const aiGames = await User.findOne({ where: { username } });
-        return aiGames?.getDataValue('aiGames') || null;
+        const botGames = await User.findOne({
+            where: { username: username }
+        })
+        const games = botGames.getDataValue('botGames')
+        return games
     } catch (error) {
-        console.error('Error finding total AI games:', error);
+        console.log(error)
     }
 }
 
-/**
- * Get saved AI game state for a session.
- */
+// gets the state of the game for bot
 export async function getGameData(sid) {
     try {
-        return await GameData.findOne({
+        const state = await GameData.findOne({
             where: {
                 [Op.and]: [
                     { SessionSid: sid },
@@ -119,50 +131,59 @@ export async function getGameData(sid) {
                 ]
             },
             raw: true
-        });
+        })
+        return state
     } catch (error) {
-        console.error('Error getting AI game data:', error);
+        console.log(error)
     }
 }
 
-/**
- * Save or update AI game state for a session.
- */
+// sets the state of the game after page refresh for bot
 export async function setGameData(data, sid) {
     try {
-        const existing = await GameData.findOne({ where: { SessionSid: sid } });
-
-        const gameData = {
-            gameArray: data.gameArray,
-            firstPlayer: data.firstPlayer,
-            winning: data.winning ?? null,
-            playerTurn: data.playerTurn,
-            level: data.level,
-            OKClick: data.OKClick,
-            datetime: data.datetime,
-            firstPlayerForThisGame: data.firstPlayerForThisGame
-        };
-
-        if (!existing) {
-            await GameData.create({ ...gameData, SessionSid: sid });
+        const res = await GameData.findOne({
+            where: { SessionSid: sid }
+        })
+        if (!res) {
+            await GameData.create({
+                gameArray: data.gameArray,
+                firstPlayer: data.firstPlayer,
+                winning: data.winning,
+                playerTurn: data.playerTurn,
+                level: data.level,
+                OKClick: data.OKClick,
+                datetime: data.datetime,
+                firstPlayerForThisGame: data.firstPlayerForThisGame,
+                SessionSid: sid
+            })
         } else {
-            await GameData.update(gameData, {
+            if (data.winning === undefined) {
+                data.winning = null
+            }
+            await GameData.update({
+                gameArray: data.gameArray,
+                firstPlayer: data.firstPlayer,
+                winning: data.winning,
+                playerTurn: data.playerTurn,
+                level: data.level,
+                OKClick: data.OKClick,
+                datetime: data.datetime,
+                firstPlayerForThisGame: data.firstPlayerForThisGame
+            }, {
                 omitNull: false,
                 where: { SessionSid: sid }
-            });
+            })
         }
     } catch (error) {
-        console.error('Error setting AI game data:', error);
+        console.log(error)
     }
 }
 
-/**
- * Delete AI game state for a session.
- */
+// deletes the state of the game when user leaves game entrance
 export async function deleteGameData(sid) {
     try {
-        const count = await GameData.count();
-        if (count > 0) {
+        const res = await GameData.count()
+        if (res !== 0) {
             await GameData.destroy({
                 where: {
                     [Op.or]: [
@@ -170,9 +191,9 @@ export async function deleteGameData(sid) {
                         { SessionSid: null }
                     ]
                 }
-            });
+            })
         }
     } catch (error) {
-        console.error('Error deleting AI game data:', error);
+        console.log(error)
     }
 }
