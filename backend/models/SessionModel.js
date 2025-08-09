@@ -1,5 +1,5 @@
 import { DataTypes } from 'sequelize';
-import sequelize from '../../config/DatabaseConfig.js';
+import sequelize from '../config/DatabaseConfig.js';
 
 const SessionModel = sequelize.define(
     'Session', {
