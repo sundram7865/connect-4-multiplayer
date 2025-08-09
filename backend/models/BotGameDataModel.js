@@ -1,5 +1,5 @@
 import { DataTypes } from 'sequelize';
-import sequelize from '../../config/DatabaseConfig.js';
+import sequelize from '../config/dbconfig.js';
 
 // BotGameData table - Stores active bot game states
 const BotGameDataModel = sequelize.define(
