@@ -1,8 +1,10 @@
 import { DataTypes } from 'sequelize';
 import sequelize from '../config/DatabaseConfig.js';
 
+
 const MultiplayerGameModel = sequelize.define(
-    'MultiplayerGame', {
+    'MultiplayerGame',
+    {
         gameId: {
             type: DataTypes.UUID,
             defaultValue: DataTypes.UUIDV4,
@@ -10,66 +12,68 @@ const MultiplayerGameModel = sequelize.define(
             allowNull: false,
             unique: true
         },
-       
+
         player1: {
             type: DataTypes.STRING,
             allowNull: false,
             references: {
-                model: 'Users',  
+                model: 'Users', 
                 key: 'username'
             }
         },
-        player2: {  
+        player2: {
             type: DataTypes.STRING,
             allowNull: false,
             references: {
-                model: 'Users',
+                model: 'Users', 
                 key: 'username'
             }
         },
-   
-        status: { 
+
+        status: {
             type: DataTypes.ENUM('waiting', 'active', 'completed', 'abandoned'),
             defaultValue: 'waiting'
         },
-    
-        winner: {  
+
+        winner: {
             type: DataTypes.ENUM('player1', 'player2', 'draw'),
-            allowNull: true 
+            allowNull: true
         },
-     
-        startedAt: {  
+
+        startedAt: {
             type: DataTypes.DATE,
             defaultValue: DataTypes.NOW,
             allowNull: false
         },
-        completedAt: { 
+        completedAt: {
             type: DataTypes.DATE,
             allowNull: true
         },
-      
-        duration: {  
+
+        duration: {
             type: DataTypes.INTEGER,
             allowNull: true
         },
-        moveCount: { 
+
+        moveCount: {
             type: DataTypes.INTEGER,
             defaultValue: 0,
             allowNull: false
         },
-        
-        disconnectedPlayer: { 
+
+        disconnectedPlayer: {
             type: DataTypes.ENUM('player1', 'player2'),
             allowNull: true
         },
-        lastActivity: {  
+
+        lastActivity: {
             type: DataTypes.DATE,
             defaultValue: DataTypes.NOW
         }
     },
     {
+        timestamps: false, 
         indexes: [
-            
             { fields: ['player1'] },
             { fields: ['player2'] },
             { fields: ['status'] },

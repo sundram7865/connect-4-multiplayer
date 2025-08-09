@@ -13,7 +13,7 @@ const BotGameDataModel = sequelize.define(
         
         gameBoard: {  
             type: DataTypes.JSON, 
-            defaultValue: Array(6).fill().map(() => Array(7).fill(null)),
+            defaultValue: () => Array(6).fill(null).map(() => Array(7).fill(null)),
             allowNull: false
         },
         playerUsername: {  
@@ -21,7 +21,7 @@ const BotGameDataModel = sequelize.define(
             allowNull: false
         },
         winner: {  
-            type: DataTypes.ENUM('player', 'bot', null),
+            type: DataTypes.ENUM('player', 'bot'),
             allowNull: true
         },
         currentTurn: {  
@@ -41,9 +41,8 @@ const BotGameDataModel = sequelize.define(
         startedAt: {  
             type: DataTypes.DATE,
             defaultValue: DataTypes.NOW
-        },
-        
+        }
     }
-)
+);
 
-export { BotGameDataModel }  
+export { BotGameDataModel };
