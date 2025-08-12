@@ -4,8 +4,8 @@ import { useInfo } from '../../../context/Info'
 import { useNavigate, useLocation } from "react-router-dom"
 import axios from 'axios'
 
-//component for the navbar that shows the avatar, username and gives the ability
-//to make signout or delete account 
+const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || ""
+
 function Navbar() {
     const { 
         buttonClicked, setButtonClicked, avatar, 
@@ -14,10 +14,10 @@ function Navbar() {
     const location = useLocation()
     const navigate = useNavigate()
 
-    //handles the click of the profile to show or not the signout and deletion
     function handleClick() {
-        if((location.pathname==="/multiplayer"&&players.username1!==username&&players.username2!==username)
-        ||(location.pathname==="/ai"&&(OKClick||level===null))||(location.pathname==="/home")) {
+        if((location.pathname==="/multiplayer" && players.username1!==username && players.username2!==username)
+        || (location.pathname==="/ai" && (OKClick || level===null))
+        || (location.pathname==="/home")) {
             setButtonClicked(!buttonClicked)
         }
         else {
@@ -25,25 +25,30 @@ function Navbar() {
         }
     }
 
-    //handles the signout and if there is not an error goes to the login path
     async function handleSignout() {
-        const res = await axios.get("/user/signout",{withCredentials:true})
-        if(res.data.logout) {
-            setButtonClicked(false)
-            navigate("/login")
+        try {
+            const res = await axios.get(`${BACKEND_URL}/user/signout`, { withCredentials:true })
+            if(res.data.logout) {
+                setButtonClicked(false)
+                navigate("/login")
+            }
+        } catch(error) {
+            console.log(error)
         }
     }
 
-    //handles the deletion and if there is not an error goes to the signup path
     async function handleDelete() {
-        const res = await axios.get("/user/delete",{withCredentials:true})
-        if(res.data.logout) {
-            setButtonClicked(false)
-            navigate("/signup")
+        try {
+            const res = await axios.get(`${BACKEND_URL}/user/delete`, { withCredentials:true })
+            if(res.data.logout) {
+                setButtonClicked(false)
+                navigate("/signup")
+            }
+        } catch(error) {
+            console.log(error)
         }
     }
 
-    //handles the change of mode and go back to home path
     function handleMode() {
         setButtonClicked(!buttonClicked)
         navigate("/home")
@@ -61,8 +66,12 @@ function Navbar() {
             <div className='twoOptions'>
                 {buttonClicked && (
                     <div className="userDropDown">
-                        {location.pathname==="/ai"||location.pathname==="/multiplayer" ? <button className='changeModeButton' onClick={handleMode}>Change Mode</button> : null}
-                        {location.pathname==="/ai"||location.pathname==="/multiplayer" ? <br/> : null }
+                        {(location.pathname === "/ai" || location.pathname === "/multiplayer") && (
+                            <>
+                                <button className='changeModeButton' onClick={handleMode}>Change Mode</button>
+                                <br/>
+                            </>
+                        )}
                         <button className="signoutButton" onClick={handleSignout}>Sign Out</button>
                         <br/>
                         <button className="deleteButton" onClick={handleDelete}>

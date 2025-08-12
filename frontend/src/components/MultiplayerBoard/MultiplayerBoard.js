@@ -6,8 +6,8 @@ import '../AiBoard/AiBoard.css'
 import './MultiplayerBoard.css'
 import Board from '../Board/Board.js'
 
-//component that shows the multiplayer board with buttons that can play the user against other user
-//is the same philosophy with the ai board
+const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || ""
+
 function MultiplayerBoard({socket}) {
     const { winningM, setWinningM, OKClickM, setOKClickM, historyClick, setListItemsM, 
         opponent, p1 } = useInfo()
@@ -16,10 +16,8 @@ function MultiplayerBoard({socket}) {
         setNoPlayAgain, beginDatetime, firstPlayerForThisGame, winner
     } = useMultiplayerBoardState(socket)
 
-    //finds all the multiplayer games of a player to be shown when clicks to the history button
     useEffect(() => {
-
-        axios.get("/multiplayer/find-all-games",{withCredentials:true}).then((res) => {
+        axios.get(`${BACKEND_URL}/multiplayer/find-all-games`, {withCredentials:true}).then((res) => {
             if(res.data) {
                 setListItemsM(res.data)
             }
@@ -28,7 +26,6 @@ function MultiplayerBoard({socket}) {
         })
     },[historyClick,setListItemsM])
 
-    //handles when a player clicks ok and saves the game in history
     const handleOKClick = () => {
         const data = {
             datetime: beginDatetime,
@@ -36,7 +33,7 @@ function MultiplayerBoard({socket}) {
             opponent: opponent,
             winner: winner
         }
-        axios.get("/multiplayer/add-game",{
+        axios.get(`${BACKEND_URL}/multiplayer/add-game`, {
             params: data,
             withCredentials:true
         }).then((res) => {
@@ -58,7 +55,7 @@ function MultiplayerBoard({socket}) {
                 { winningM === "lost" ? <p>You Lost!</p> : winningM === "won" ? <p>You Won!</p> : <p>Draw!</p>}
                 <div onClick={handleOKClick}>OK</div>
             </div> : null}
-            { playAgainText&&OKClickM ? <div className='playAgain'>
+            { playAgainText && OKClickM ? <div className='playAgain'>
                 <ul>
                     <li>
                         Do you want to play again<br/> with the same opponent?
@@ -72,8 +69,7 @@ function MultiplayerBoard({socket}) {
                         }}>No</button>
                     </li>
                 </ul>
-            </div>
-            : null}
+            </div> : null}
             { noPlayAgain ? <div className='noPlayAgain'>
                 {opponent} does not want to play again!<br/>
                 <button onClick={() => {setNoPlayAgain(false)}}>OK</button>

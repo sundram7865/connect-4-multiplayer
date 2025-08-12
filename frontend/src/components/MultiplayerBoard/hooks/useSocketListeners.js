@@ -4,8 +4,8 @@ import { animateDrop } from '../../../utils/gameFunctions'
 import { GameData } from '../../../classes/GameData'
 import axios from 'axios'
 
-//hook that checks/handles the socket listeners that are useful for the multiplayer mode
-//and the communication with the server
+const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || ""
+
 export const useSocketListeners = (socket) => {
     const { username, winningM, setWinningM, setQuitInitally, OKClickM, 
         setOKClickM, setSecondPlayer, setHelpClick, setHistoryClick, time, setTime,
@@ -31,8 +31,7 @@ export const useSocketListeners = (socket) => {
 
     useEffect(() => {
 
-        //sets the opponent for the history
-        if(p1.username&&p2.username) {
+        if(p1.username && p2.username) {
 
             socket.on("setMessages", (messages,currentMessage) => {
                 setMessages([...messages,currentMessage])
@@ -49,21 +48,12 @@ export const useSocketListeners = (socket) => {
             })
         }
 
-        //handles the answer no in play again question
         socket.on("noIsAnswer", () => {
             setNoPlayAgain(true)
         })
 
-        //clear the data when a game starts from play again
         socket.on("clearData", () => {
-            setBoardState(new GameData([
-                ['W','W','W','W','W','W','W'],
-                ['W','W','W','W','W','W','W'],
-                ['W','W','W','W','W','W','W'],
-                ['W','W','W','W','W','W','W'],
-                ['W','W','W','W','W','W','W'],
-                ['W','W','W','W','W','W','W']
-            ]))
+            setBoardState(new GameData(initialBoard))
             setPlayerTurnM(null)
             setPlayerTurnUsernameM(null)
             setWinningM(null)
@@ -95,37 +85,34 @@ export const useSocketListeners = (socket) => {
             setBeginDatetime(formattedDate)
         })
 
-        //makes the question to the opponent and is waiting for an answer
         socket.on("doYouWantToPlayAgain", (text) => {
             setPlayAgainText(text)
         })
 
-        //if time is over check who wins
-        if(time.timeP1===0||time.timeP2===0) {
+        if(time.timeP1 === 0 || time.timeP2 === 0) {
             socket.on("timeState", (winner) => {
                 if(!OKClickM) {
                     setWinningM(winner)
                 }
-                if(winner!==null) {
+                if(winner !== null) {
                     setHistoryClick(false)
                     setHelpClick(false)
                     setStatsClick(false)
                     setChatClick(false)
                     setQuitClick(false)
                 }
-                if(winner==="won") {
+                if(winner === "won") {
                     setWinner("You")
                 }
-                else if(winner==="lost") {
+                else if(winner === "lost") {
                     setWinner(opponent)
                 }
-                else if(winner==="draw") {
+                else if(winner === "draw") {
                     setWinner("Draw")
                 }
             })
         }
 
-        //sets who player plays, because if player's turn is changed the timer is initializing and the timer of the other starts
         socket.on("updatePlaying",(data) => {
             setPlayingM({
                 ...playingM,
@@ -134,13 +121,12 @@ export const useSocketListeners = (socket) => {
             })
         })
 
-        //updates the board when a move made
         socket.on("updateBoard", async (board,player,playerUsername,rowIndex,colIndex,color,winner) => {
-            if(color==="red"&&rowIndex!==null) {
+            if(color === "red" && rowIndex !== null) {
                 setDroppingM(true)
                 await animateDrop(rowIndex,colIndex,'darkred',0,buttons)
             }
-            else if(color==="yellow"&&rowIndex!==null) {
+            else if(color === "yellow" && rowIndex !== null) {
                 setDroppingM(true)
                 await animateDrop(rowIndex,colIndex,'goldenrod',0,buttons)
             }
@@ -149,7 +135,7 @@ export const useSocketListeners = (socket) => {
             socket.emit("checkTime",p1.room,player)
             setPlayerTurnUsernameM(playerUsername)
             setWinningM(winner)
-            if(winner!==null) {
+            if(winner !== null) {
                 setHistoryClick(false)
                 setHelpClick(false)
                 setStatsClick(false)
@@ -157,18 +143,17 @@ export const useSocketListeners = (socket) => {
                 setQuitClick(false)
             }
             setDroppingM(false)
-            if(winner==="won") {
+            if(winner === "won") {
                 setWinner("You")
             }
-            else if(winner==="lost") {
+            else if(winner === "lost") {
                 setWinner(opponent)
             }
-            else if(winner==="draw") {
+            else if(winner === "draw") {
                 setWinner("Draw")
             }
         })
 
-        //if some player join in a new room, sets the first player(P1)
         socket.on("updateJoin", (data) => {
             setP1({
                 ...p1,
@@ -184,9 +169,7 @@ export const useSocketListeners = (socket) => {
             })
         })
 
-        //if a room is fulled sets the first and the second player(P1 and P2) and the game begins
         socket.on("gameRoomFulled", (data) => {
-            
             setP1({
                 ...p1,
                 username: data.p1.username,
@@ -219,7 +202,7 @@ export const useSocketListeners = (socket) => {
             const formattedDate = `${year}.${month}.${day} - ${hours}:${minutes}:${seconds}`
 
             setBeginDatetime(formattedDate)
-            if(username===data.p1.username) {
+            if(username === data.p1.username) {
                 setFirstPlayerForThisGame("You")
             }
             else {
@@ -229,11 +212,10 @@ export const useSocketListeners = (socket) => {
             socket.emit("checkTime",data.p1.room,playerTurnM)
         })
 
-        //saves a multiplayer game for the history for a user
         const saveGame = (data) => {
-            axios.get("/multiplayer/add-game",{
+            axios.get(`${BACKEND_URL}/multiplayer/add-game`, {
                 params: data,
-                withCredentials:true
+                withCredentials: true
             }).then((res) => {
                 if(res.data.success) {
                     setWinningM(null)
@@ -244,10 +226,8 @@ export const useSocketListeners = (socket) => {
             })
         }
 
-        //handles the quit, if there is a winner or saves the game if the opponent did not have time to save the game  
-        //and initializes the state of the two players
-        socket.on("quitUpdate",(data,quitUser) => {
-            if(data===0||username!==data.p1.username) {
+        socket.on("quitUpdate", (data, quitUser) => {
+            if(data === 0 || username !== data.p1.username) {
                 setP1({
                     ...p1,
                     username: null,
@@ -270,7 +250,7 @@ export const useSocketListeners = (socket) => {
                 })
             }
             else {
-                if(username===data.p1.username) {
+                if(username === data.p1.username) {
                     setP1({
                         ...p1,
                         username: data.p1.username,
@@ -293,17 +273,10 @@ export const useSocketListeners = (socket) => {
                     })
                 }
             }
-            setBoardState(new GameData([
-                ['W','W','W','W','W','W','W'],
-                ['W','W','W','W','W','W','W'],
-                ['W','W','W','W','W','W','W'],
-                ['W','W','W','W','W','W','W'],
-                ['W','W','W','W','W','W','W'],
-                ['W','W','W','W','W','W','W']
-            ]))
-            if(!OKClickM&&data!==0&&!winningM) {
+            setBoardState(new GameData(initialBoard))
+            if(!OKClickM && data !== 0 && !winningM) {
                 let dataHistory
-                if(quitUser===username) {
+                if(quitUser === username) {
                     dataHistory = {
                         datetime: beginDatetime,
                         firstplayer: firstPlayerForThisGame,
@@ -322,8 +295,7 @@ export const useSocketListeners = (socket) => {
                 saveGame(dataHistory)
             }
             else if(winningM) {
-                let dataHistory
-                dataHistory = {
+                let dataHistory = {
                     datetime: beginDatetime,
                     firstplayer: firstPlayerForThisGame,
                     opponent: opponent,
@@ -337,8 +309,8 @@ export const useSocketListeners = (socket) => {
             setOKClickM(false)
             setTime({
                 ...time,
-                timeP1:60,
-                timeP2:60
+                timeP1: 60,
+                timeP2: 60
             })
             setPlayAgainText(null)
             setDroppingM(false)
@@ -360,12 +332,12 @@ export const useSocketListeners = (socket) => {
             socket.off("updatePlaying")
             socket.off("timeState")
         }
-    },[socket,p1,p2,username,playingM,setWinningM,time,setTime,setQuitInitally,setOKClickM,
-    setSecondPlayer,setDroppingM,opponent,players,setPlayers,
-    beginDatetime,winner,firstPlayerForThisGame,OKClickM,winningM,setOpponent,setMessages,
-    setHelpClick,setHistoryClick,setStatsClick, setChatClick, setQuitClick, 
-    playerTurnM,setQuitYes,setNewMessages,chatClick, setPlayerTurnUsernameM, 
-    setPlayingM, setP1, setP2, setPlayerTurnM])
+    }, [socket, p1, p2, username, playingM, setWinningM, time, setTime, setQuitInitally, setOKClickM,
+        setSecondPlayer, setDroppingM, opponent, players, setPlayers,
+        beginDatetime, winner, firstPlayerForThisGame, OKClickM, winningM, setOpponent, setMessages,
+        setHelpClick, setHistoryClick, setStatsClick, setChatClick, setQuitClick, 
+        playerTurnM, setQuitYes, setNewMessages, chatClick, setPlayerTurnUsernameM, 
+        setPlayingM, setP1, setP2, setPlayerTurnM])
 
     return { 
         boardState, setBoardState, buttons, playAgainText, setPlayAgainText, noPlayAgain, 

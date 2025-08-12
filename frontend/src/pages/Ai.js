@@ -6,24 +6,25 @@ import AiBoard from '../components/AiBoard/AiBoard'
 
 function Ai() {
     const { historyClick, setListItems } = useInfo()
+    const backendUrl = process.env.REACT_APP_BACKEND_URL
 
-    //finds all games from history to be shown when the player clicks to history button
     useEffect(() => {
+        // Fetch all AI game history from backend URL
+        axios.get(`${backendUrl}/ai/find-all-games`, { withCredentials: true })
+            .then(res => {
+                if (res.data) {
+                    setListItems(res.data)
+                }
+            })
+            .catch(error => {
+                console.log(error)
+            })
+    }, [historyClick, setListItems, backendUrl])
 
-        axios.get("/ai/find-all-games",{withCredentials:true}).then((res) => {
-            if(res.data) {
-                setListItems(res.data)
-            }
-        }).catch((error) => {
-            console.log(error)
-        })
-    },[historyClick,setListItems])
-
-    //how it looks like the ai path with representation of ai playing with a player
     return (
         <div>
-            <Home/>
-            <AiBoard/>
+            <Home />
+            <AiBoard />
         </div>
     )
 }

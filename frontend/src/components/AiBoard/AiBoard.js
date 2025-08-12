@@ -5,7 +5,12 @@ import './AiBoard.css'
 import { useAiBoardState } from "./hooks/useAiBoardState"
 import Board from "../Board/Board"
 
-//component that shows the ai board with buttons that can play the user against the ai
+// Load environment variables (usually done once in app entry point, but importing here if needed)
+import.meta.env || {} // This is just a placeholder for clarity
+
+// Get backend URL from environment variable
+const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || ""
+
 function AiBoard() {
     const {
         level, winning, setOKClick, setWinning
@@ -15,7 +20,6 @@ function AiBoard() {
         setBoardState, playerState , setPlayerState, playerTurn, setPlayerTurn
     } = useAiBoardState()
     
-    //handles the ok click to save the ai game in history
     const handleOKClick = () => {
         const data = {
             level: level,
@@ -23,7 +27,7 @@ function AiBoard() {
             winner: winning,
             firstplayer: firstPlayerForThisGame
         }
-        axios.get("/ai/add-game",{
+        axios.get(`${BACKEND_URL}/ai/add-game`, {
             params: data,
             withCredentials:true
         }).then((res) => {

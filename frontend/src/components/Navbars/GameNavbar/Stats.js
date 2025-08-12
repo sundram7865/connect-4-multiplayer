@@ -4,8 +4,8 @@ import { useLocation } from "react-router-dom"
 import { useInfo } from '../../../context/Info'
 import './GameNavbar.css'
 
-//component for the stats for the both modes ai/multiplayer that shows
-//statistics about the previous games with different way in two different modes
+const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || ""
+
 function Stats() {
     const [totalGames,setTotalGames] = useState(null)
     const [totalGamesM, setTotalGamesM] = useState(null)
@@ -15,10 +15,9 @@ function Stats() {
     } = useInfo()
     const location = useLocation()
 
-    //finds the stats of all ai games of a user when the player clicks to the stats button
     useEffect(() => {
         if(statsClick) {
-            axios.get("/ai/find-total-games",{withCredentials:true}).then((res) => {
+            axios.get(`${BACKEND_URL}/ai/find-total-games`, { withCredentials:true }).then((res) => {
                 setTotalGames(res.data.games)
             }).catch(error => {
                 console.log(error)
@@ -26,12 +25,12 @@ function Stats() {
         }
     },[statsClick])
 
-    //finds the stats of all multiplayer games of a user when the player clicks to the stats button, if plays with someone will show and the opponent stats
     useEffect(() => {
         if(statsClick) {
-            axios.get("/multiplayer/find-total-games",{
+            axios.get(`${BACKEND_URL}/multiplayer/find-total-games`, {
                 params:{opponent:opponent},
-                withCredentials:true}).then((res) => {
+                withCredentials:true
+            }).then((res) => {
                 setTotalGamesM(res.data.games)
                 setTotalOpponentGamesM(res.data.opponentGames)
             }).catch(error => {
@@ -40,7 +39,6 @@ function Stats() {
         }
     },[statsClick,opponent])
 
-    //sets the hover of stats div in false
     function removeStatsHover() {
         setStatsHover(false)
     }

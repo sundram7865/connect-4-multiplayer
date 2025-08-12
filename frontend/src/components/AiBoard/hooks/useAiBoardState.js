@@ -5,7 +5,9 @@ import { useInfo } from '../../../context/Info'
 import { GameData } from '../../../classes/GameData'
 import { AiModule } from '../../../classes/AiModule'
 
-//hook that checks the state of the board in the ai mode of the game
+// Get backend URL from environment variable or default empty string
+const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || ""
+
 export const useAiBoardState = () => {
     const initialBoard = [
         ['W','W','W','W','W','W','W'],
@@ -26,7 +28,7 @@ export const useAiBoardState = () => {
     const [firstPlayerForThisGame, setFirstPlayerForThisGame] = useState(null)
     const [beginDatetime, setBeginDatetime] = useState(null)
     
-    //handles the initialization of the game and makes the first move if ai is playing first
+    // handles the initialization of the game and makes the first move if ai is playing first
     useEffect(() => {
         if(buttons !== null) {
             let newPlayerState
@@ -113,7 +115,7 @@ export const useAiBoardState = () => {
         }
     },[checkLevel,level,setCheckLevel,firstPlayer,setDropping,boardState,setOKClick,buttons])
 
-    //sets the state when it has changed
+    // sets the state when it has changed
     useEffect(() => {
 
         if(level&&!dropping) {
@@ -127,8 +129,8 @@ export const useAiBoardState = () => {
                 datetime: beginDatetime,
                 firstPlayerForThisGame: firstPlayerForThisGame
             }
-            axios.get("/ai/set-board-state",{
-                params:data,
+            axios.get(`${BACKEND_URL}/ai/set-board-state`, {
+                params: data,
                 withCredentials:true
             }).then((res) => {
             }).catch(error => {
@@ -137,11 +139,11 @@ export const useAiBoardState = () => {
         }
     },[boardState.gameArray,level,winning,OKClick,playerTurn,firstPlayer,beginDatetime,firstPlayerForThisGame,dropping])
 
-    //gets the state not to be affected from refresh of the page
+    // gets the state not to be affected from refresh of the page
     useEffect(() => {
 
         if(level===null) {
-            axios.get("/ai/get-board-state",{withCredentials:true}).then((res)=> {
+            axios.get(`${BACKEND_URL}/ai/get-board-state`, {withCredentials:true}).then((res)=> {
                 if(res.data.state) {
                     let board = [
                         ['W','W','W','W','W','W','W'],

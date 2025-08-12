@@ -7,7 +7,8 @@ import './LoginForm.css'
 import 'font-awesome/css/font-awesome.min.css'
 import axios from 'axios'
 
-//component for the login form
+const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || ""
+
 function LoginForm() {
     const [username,setUsername] = useState("")
     const [password,setPassword] = useState("")
@@ -15,20 +16,18 @@ function LoginForm() {
     const [notVerify, setNotVerify] = useState(null)
     const navigate = useNavigate()
 
-    //disable the enter key for submision of the form
     function handleKeyDown(e) {
         if(e.key==="Enter") {
             e.preventDefault()
         }
     }
 
-    //handles the submission and checks if there is an error and if not goes to the pathname /GameEntrance
     function handleSubmit(e) {
         e.preventDefault()
-        axios.post("/user/login",{
-            username:username,
-            password:password
-        },{withCredentials:true}).then(res => {
+        axios.post(`${BACKEND_URL}/user/login`, {
+            username: username,
+            password: password
+        }, { withCredentials:true }).then(res => {
             if(res.data.success) {
                 navigate(res.data.redirectUrl)
             }

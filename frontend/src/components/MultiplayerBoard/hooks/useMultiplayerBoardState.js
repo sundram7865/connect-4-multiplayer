@@ -4,7 +4,8 @@ import { useInfo } from '../../../context/Info'
 import axios from 'axios'
 import { useSocketListeners } from './useSocketListeners'
 
-//hook that checks/handles the state of the board in the multiplayer mode of the game
+const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || ""
+
 export const useMultiplayerBoardState = (socket) => {
     const { username, winningM, setWinningM, OKClickM, 
         setOKClickM, setSecondPlayer, time, setTime,
@@ -16,10 +17,8 @@ export const useMultiplayerBoardState = (socket) => {
         setFirstPlayerForThisGame, winner, setWinner
     } = useSocketListeners(socket)
     
-    //sets the state when it has changed
     useEffect(() => {
-
-        if(playClick&&p1.username) {
+        if(playClick && p1.username) {
             socket.on("updatePlayerTurn", (turn) => {
                 setPlayerTurnM(turn)
             })
@@ -42,33 +41,33 @@ export const useMultiplayerBoardState = (socket) => {
                 p2: p2,
                 playClick: playClick
             }
-            axios.get("/multiplayer/set-board-state",{
-                params:data,
-                withCredentials:true
-            }).then((res) => {
+            axios.get(`${BACKEND_URL}/multiplayer/set-board-state`, {
+                params: data,
+                withCredentials: true
+            }).then(() => {
+                // no action needed here
             }).catch(error => {
                 console.log(error)
             })
             if(data.winningM) {
-                axios.get("/multiplayer/set-board-state",{
-                    params:data,
-                    withCredentials:true
-                }).then((res) => {
+                axios.get(`${BACKEND_URL}/multiplayer/set-board-state`, {
+                    params: data,
+                    withCredentials: true
+                }).then(() => {
+                    // no action needed here
                 }).catch(error => {
                     console.log(error)
                 })
             }
         }
-    },[boardState.gameArray,OKClickM,beginDatetime,firstPlayerForThisGame,messages,noPlayAgain,
-        playAgainText,opponent,p1,p2,playingM,playClick,playerTurnM,playerTurnUsernameM,time,time.timeP1,
-        time.timeP2,winner,winningM,socket,quitYes, setPlayerTurnM])
+    }, [boardState.gameArray, OKClickM, beginDatetime, firstPlayerForThisGame, messages, noPlayAgain,
+        playAgainText, opponent, p1, p2, playingM, playClick, playerTurnM, playerTurnUsernameM, time, time.timeP1,
+        time.timeP2, winner, winningM, socket, quitYes, setPlayerTurnM])
     
-    //gets the state not to be affected from refresh of the page
     useEffect(() => {
-
-        socket.emit("updateSocket",username,playerTurnUsernameM)
-        if(!playClick&&!quitYes) {
-            axios.get("/multiplayer/get-board-state",{withCredentials:true}).then((res)=> {
+        socket.emit("updateSocket", username, playerTurnUsernameM)
+        if(!playClick && !quitYes) {
+            axios.get(`${BACKEND_URL}/multiplayer/get-board-state`, {withCredentials: true}).then((res) => {
                 if(res.data.state) {
                     let board = [
                         ['W','W','W','W','W','W','W'],
@@ -81,7 +80,7 @@ export const useMultiplayerBoardState = (socket) => {
                     if(res.data.state.gameArray) {
                         for(let i=0; i<GameData.ROWS; i++) {
                             for(let j=0; j<GameData.COLUMNS; j++) {
-                                board[i][j]=res.data.state.gameArray[i][j].trim()
+                                board[i][j] = res.data.state.gameArray[i][j].trim()
                             }
                         }
                         setBoardState(new GameData(board))
@@ -103,13 +102,12 @@ export const useMultiplayerBoardState = (socket) => {
                     })
                     if(res.data.state.chatMessages) {
                         setMessages(res.data.state.chatMessages)
-                    }
-                    else {
+                    } else {
                         setMessages([])
                     }
-                    setPlayingM({...playingM,...res.data.state.playing})
-                    setP1({...p1,...res.data.state.p1})
-                    setP2({...p2,...res.data.state.p2})
+                    setPlayingM({...playingM, ...res.data.state.playing})
+                    setP1({...p1, ...res.data.state.p1})
+                    setP2({...p2, ...res.data.state.p2})
                     setPlayClick(res.data.state.playClick)
                     setPlayers({
                         ...players,
@@ -122,10 +120,9 @@ export const useMultiplayerBoardState = (socket) => {
                 console.log(error)
             })
         }
-
-    },[playClick,boardState,setMessages,setOKClickM,setOpponent,setPlayClick,
-        setTime,setWinningM,playingM,p1,p2,socket,username,players,setPlayers,
-        setSecondPlayer,time,playerTurnUsernameM,quitYes,setQuitYes, setP1, setP2,
+    }, [playClick, boardState, setMessages, setOKClickM, setOpponent, setPlayClick,
+        setTime, setWinningM, playingM, p1, p2, socket, username, players, setPlayers,
+        setSecondPlayer, time, playerTurnUsernameM, quitYes, setQuitYes, setP1, setP2,
         setPlayerTurnM, setPlayerTurnUsernameM, setPlayingM, setBeginDatetime, setBoardState, 
         setFirstPlayerForThisGame, setNoPlayAgain, setPlayAgainText, setWinner])
 
