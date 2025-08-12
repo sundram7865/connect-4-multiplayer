@@ -14,7 +14,6 @@ This web application allows users to play Connect4 against AI or other players i
 - [Session Management](#session-management)
 - [Socket Communication](#socket-communication)
 - [Chat Functionality](#chat-functionality)
-- [Email Verification](#email-verification)
 - [Game Logic In Frontend](#game-logic-in-frontend)
 - [Multiplayer Mode](#multiplayer-mode)
 - [Frontend Routing](#frontend-routing)
@@ -22,7 +21,7 @@ This web application allows users to play Connect4 against AI or other players i
 - [Screenshots From The App](#screenshots-from-the-app)
   - [Login Route](#login-route)
   - [Signup Route](#signup-route)
-  - [Email Verification Route](#email-verification-route)
+
   - [Home Route](#home-route)
   - [AI Route](#ai-route)
   - [Multiplayer Route](#multiplayer-route)
@@ -30,7 +29,6 @@ This web application allows users to play Connect4 against AI or other players i
 ## Features
 
 - Player authentication with login and signup forms(cookies for authentication).
-- Email verification for account registration.
 - Connect4 with AI mode.
 - Real-time multiplayer Connect4 mode with chat functionality.
 - User account management (sign out, delete account, change mode).
@@ -39,7 +37,7 @@ This web application allows users to play Connect4 against AI or other players i
 
 ## Technologies Used
 
-- **Backend:** Node.js, Express.js, PostgreSQL, Nodemailer, Socket.io.
+- **Backend:** Node.js, Express.js, PostgreSQL, Socket.io.
 - **Frontend:** React, Axios.
 - **Communication:** REST API for general communication, Socket.io for real-time communication.
 - **Session Management:** Session data stored for user authentication.
@@ -48,7 +46,7 @@ This web application allows users to play Connect4 against AI or other players i
 
 To get started with the Connect4 Multiplayer Web Application, follow these steps:
 
-1. Clone the repository: `git clone https://github.com/vasilisanagno/Web-App-Connect4-AI-and-Multiplayer.git`
+1. Clone the repository: `git clone https://github.com/sundram7865/connect-4-multiplayer.git`
 2. Install dependencies: `npm install`
 3. Configure your PostgreSQL database and update the database configuration accordingly.
 4. Run the application: `npm start`
@@ -74,7 +72,7 @@ The project has the following frontend folder structure:
   - `public`: Contains static assets such as images and the `index.html` file.
   - `src`: Contains the source code.
     - `classes`: Classes related to AI.
-    - `components`: React components(Javascriopt files) for UI with the CSS files.
+    - `components`: React components(Javascript files) for UI with the CSS files.
       - `hooks`: In some components there is this folder that contains custom hooks for handling the ai and the multiplayer mode.
     - `context`: Hook that have variables that are useful in many components.
     - `helpers`: Helping functions for the UI.
@@ -110,9 +108,6 @@ Socket.io is used for real-time communication between players in multiplayer mod
 
 Real-time chat functionality is implemented in the multiplayer mode using Socket.io.
 
-## Email Verification
-
-Email verification is implemented for enhanced account security during registration.
 
 ## Game Logic In Frontend
 
@@ -128,7 +123,7 @@ The routing in the application is managed by the `App.js` file. It handles navig
 
 ## Summary
 
-Initially there is a login form and a signup form and the player will be able to connect or register with his data in the main part of the website (in registration there is verification for the email where a link is sent to the email of the user to be verified his account). There are two buttons, one for connect4 with ai and the other for connect4 with multiplayer. If you click on the player's name, 2 options will appear (sign out, delete account) or 3 options, 1 more option (change mode, where it exits the ai mode or the multiplayer mode and returns to the main part of the website). There is a database in the backend development where users are stored, the information of the games they have played and more (such as sessions). Finally there is statistics and help in both modes, and in the multiplayer there is also chat between the 2 players playing.
+Initially there is a login form and a signup form and the player will be able to connect or register with his data in the main part of the website . There are two buttons, one for connect4 with ai and the other for connect4 with multiplayer. If you click on the player's name, 2 options will appear (sign out, delete account) or 3 options, 1 more option (change mode, where it exits the ai mode or the multiplayer mode and returns to the main part of the website). There is a database in the backend development where users are stored, the information of the games they have played and more (such as sessions). Finally there is statistics and help in both modes, and in the multiplayer there is also chat between the 2 players playing.
 
 ## Screenshots From The App
 
@@ -138,8 +133,6 @@ Initially there is a login form and a signup form and the player will be able to
 ### Signup Route
 ![Screenshot](readmeImages/SignupRoute.png)
 
-### Email Verification Route
-![Screenshot](readmeImages/VerificationRoute.png)
 
 <div align="center">
   <img src="readmeImages/VerificationEmail.png"/>

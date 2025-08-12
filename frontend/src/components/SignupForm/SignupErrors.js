@@ -53,7 +53,7 @@ function SignupErrors(props) {
                 {props.warning.confirm ? <ErrorConfirmMessage/> : null}
                 {props.warning.usernameDatabase ? <ErrorDatabaseMessage choice={"username"}/> : null}
                 {props.warning.emailDatabase ? <ErrorDatabaseMessage choice={"email"}/> : null}
-                {props.verify ? <li>you can log in now</li> : null}
+                {props.verify ? <h>you can log in now</h> : null}
             </ol>
         </div>
     )
