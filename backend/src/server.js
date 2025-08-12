@@ -28,13 +28,13 @@ const PORT = process.env.PORT || 5000
 
 // CORS setup
 app.options("*", cors({
-    origin: ['https://connect-4-multiplayer.vercel.app'],
+    origin: ['http://localhost:3000'],
     methods: ["POST", "GET"],
     credentials: true,
     optionsSuccessStatus: 200
 }))
 app.use(cors({
-    origin: ['https://connect-4-multiplayer.vercel.app'],
+    origin: ['http://localhost:3000'],
     methods: ["POST", "GET"],
     credentials: true,
     optionsSuccessStatus: 200
@@ -60,7 +60,7 @@ app.use(session({
     rolling: true,
     cookie: {
         sameSite: "lax",
-        secure: false, // set to true if using HTTPS in production
+        secure: true, // set to true if using HTTPS in production
         maxAge: 1000 * 60 * 20 // 20 minutes
     }
 }))
