@@ -134,9 +134,7 @@ Initially there is a login form and a signup form and the player will be able to
 ![Screenshot](readmeImages/SignupRoute.png)
 
 
-<div align="center">
-  <img src="readmeImages/VerificationEmail.png"/>
-</div>
+
 
 ### Home Route
 ![Screenshot](readmeImages/HomeRoute.png)
