@@ -5,8 +5,7 @@ import './AiBoard.css'
 import { useAiBoardState } from "./hooks/useAiBoardState"
 import Board from "../Board/Board"
 
-// Load environment variables (usually done once in app entry point, but importing here if needed)
-import.meta.env || {} // This is just a placeholder for clarity
+
 
 // Get backend URL from environment variable
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || ""
