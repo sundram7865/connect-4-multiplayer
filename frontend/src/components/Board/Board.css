@@ -1,0 +1,17 @@
+.board {
+    display: grid;
+    justify-content: center;
+    align-content: center;
+    align-items: center;
+    margin: 20px;
+    background-color: rgba(0, 0, 255, 0.85);
+    border-radius: 0.5em;
+    padding: 10px;
+}
+
+.board tbody tr td button {
+    margin:5px;
+    padding:25px;
+    border-radius: 50%;
+    border: 2px solid black;
+}

@@ -1,0 +1,329 @@
+.options {
+    display: flex;
+    justify-content: center;
+}
+
+.options div {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-content: center;
+    background-color: rgb(141, 44, 206);
+    border-radius: 1.2em;
+    color:white;
+}
+
+.newGame, .firstPlayer, .history, .help, .stats, .play, .quit, .chat {
+    padding-left: 1.2em;
+    padding-right: 1.2em;
+    padding-top: 0.2em;
+    padding-bottom: 0.2em;
+    text-align: center;
+}
+
+.newGameHovered ,.firstPlayerHovered, .historyHovered, .helpHovered, .statsHovered, .playHovered, .quitHovered, .chatHovered {
+    background-color: rgb(185, 95, 244) !important;
+}
+
+.optionsMode, .firstMove, .helpInfo, .historyInfo, .aiBoard, .quitOptions, .multiplayerBoard, .chatBox {
+   position: absolute;
+   top:62px;
+   box-shadow: 0 5px 5px 0 rgba(0, 0, 0, 0.292);
+   border-radius: 0 0 0.7em 0.7em !important;
+   background-color: rgb(141, 44, 206);
+}
+
+.optionsMode ul {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.optionsMode ul li {
+    text-align: center;
+    padding-left: 0.7em;
+    padding-right: 0.7em;
+    margin:0.2em;
+    margin-left: 0.6em;
+    margin-right: 0.6em;
+    border-radius: 0.7em !important;
+}
+
+.optionsMode ul li:hover {
+    background-color: rgb(185, 95, 244);
+}
+
+.optionsMode ul li:first-child {
+    margin-top: 0.4em;
+}
+
+.optionsMode ul li:last-child {
+    margin-bottom: 0.6em;
+}
+
+.firstMove {
+    top:63px;
+}
+
+.firstMove ul {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.firstMove ul label {
+    text-align: left;
+    padding-left: 0.4em;
+    padding-right: 0.4em;
+    margin:0.3em;
+    margin-left: 0.5em;
+    margin-right: 0.5em;
+}
+
+.firstMove ul:first-child {
+    margin-top: 0.2em;
+}
+
+.firstMove ul:last-child {
+    margin-bottom: 0.2em;
+}
+
+.helpInfo, .historyInfo, .aiBoard, .quitOptions, .multiplayerBoard, .chatBox {
+    top:63.1px;
+    border-radius: 0.7em !important;
+}
+
+.helpInfo ul, .quitOptions ul {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.helpInfo ul li, .quitOptions ul li {
+    text-align: center;
+    padding-left: 0.7em;
+    padding-right: 0.7em;
+    margin:0.6em;
+}
+
+.helpInfo ul li a {
+    color: rgb(80, 165, 251);
+}
+
+.helpInfo ul li a:hover {
+    color:cyan;
+}
+
+.historyInfo {
+    overflow-y: hidden;
+    height: 235px;
+    width: 555px;
+    justify-self: flex-end;
+}
+
+.historyInfo ol::-webkit-scrollbar, .chatMessages::-webkit-scrollbar {
+    background-color: rgb(65, 34, 86);
+    width: 10px;
+}
+
+.historyInfo ol::-webkit-scrollbar-thumb, .chatMessages::-webkit-scrollbar-thumb {
+    background-color: rgb(185, 95, 244);
+    border-radius: 2em;
+}
+
+.historyInfo ol {
+    overflow-y: auto;
+    text-align: left;
+    margin-right:5px;
+}
+
+
+.historyInfo ol li {
+    padding-top: 10px;
+    padding-right:10px;
+    padding-left: 5px;
+    margin-right:7px;
+}
+
+.historyInfo button {
+    border-radius: 1.5em;
+    border: none;
+    background-color: rgb(194, 12, 12);
+    color:white;
+    padding: 5px;
+    margin-left: 420px;
+}
+
+.historyInfo button:hover {
+    background-color: rgb(226, 81, 81);
+}
+
+@media (max-width: 700px) {
+    .historyInfo {
+        height: 235px;
+        width: 450px;
+    }
+
+    .historyInfo button {
+        margin-left: 325px;
+    }
+}
+
+.aiBoard ul, .multiplayerBoard ul {
+    list-style: none;
+    padding: 7px;
+    padding-top: 0px;
+}
+
+.aiBoard ul li, .multiplayerBoard ul li {
+    text-align: center;
+}
+
+.aiBoard ul li table thead tr th, .multiplayerBoard ul li table thead tr th{
+    padding: 10px;
+}
+
+.quitOptions ul li button {
+    margin:10px;
+}
+
+.quitOptions ul li button:nth-child(2) {
+    margin-right:30px;
+}
+
+.quitOptions ul li button:last-child {
+    margin-left:30px;
+}
+
+.quitOptions ul li span, .caution {
+    color: rgb(245, 79, 79);
+}
+
+.quitOptions ul li i {
+    padding: 5px;
+}
+
+.good {
+    color: rgb(36, 193, 36);
+    position: relative;
+    bottom:1.5px;
+}
+
+.chatBox {
+    height: 235px;
+    width: 450px;
+    display: flex;
+    flex-direction: column !important;
+    overflow-y: hidden;
+}
+
+.chatMessageInput {
+    border-radius: 0.5em;
+    display: flex;
+    flex-direction: row;
+    position: relative;
+    gap: 5px;
+}
+
+.chatMessages {
+    overflow-y: auto !important;
+    margin-bottom: 10px;
+    flex-grow:1;
+}
+
+.chatMessages ul {
+    list-style: none;
+    padding: 0;
+    width: 350px;
+}
+
+.chatMessages ul li {
+    display: flex;
+    flex-direction: column;
+}
+
+.chatMessages ul li div:first-child {
+    font-size: 0.8em;
+    max-width: 20vw;
+    word-wrap: break-word;
+    max-height: none;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    background-color: #06367e;
+    padding: 5px;
+    padding-top: 1px;
+    padding-bottom: 3px;
+    margin-bottom: 5px;
+    margin-left: 5px;
+}
+
+.chatMessages ul li div:nth-child(2) {
+    display: flex;
+    flex-direction: column;
+    max-width: 20vw;
+    padding: 10px;
+    border-radius: 1em;
+    word-wrap: break-word;
+    max-height: none;
+    margin-left: 5px;
+}
+
+.chatMessages ul li div:last-child {
+    font-size: 0.8em;
+    margin-bottom: 10px;
+}
+
+.chatMessageInput input {
+    height:23px;
+    margin-bottom: 5px;
+    border-radius: 0.5em;
+    border: 1px solid black;
+}
+
+.chatMessageInput div {
+    background-color: deepskyblue;
+    padding: 13px;
+    margin-bottom: 6.5px;
+    border-radius: 0.5em;
+    height: 0;
+}
+
+.chatMessageInput div:hover {
+    background-color:dodgerblue;
+}
+
+.chatMessageInput div i {
+    align-self: center;
+}
+
+.newMessages {
+    position: relative;
+    left: 5px;
+    top: 4.5px;
+    font-size: 0.95em;
+    color: rgb(208, 218, 22);
+}
+
+.chatNewMessages {
+    background-color: rgb(173, 34, 34) !important;
+}
+
+.chatNewMessages:hover {
+    background-color: rgb(185, 95, 244) !important;
+}
+
+@media (max-width: 501px) {
+    .helpInfo, .historyInfo, .chatBox, .quitOptions, .multiplayerBoard {
+        top:84px;
+    }
+}

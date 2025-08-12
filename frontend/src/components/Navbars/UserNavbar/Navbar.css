@@ -1,0 +1,90 @@
+.userNavbar {
+    display: flex;
+    gap: 5px;
+    background-color: dodgerblue;
+    flex-direction: row-reverse;
+    align-items: center;
+    padding:0.8em;
+    height:0.6em;
+    box-shadow: 0 0 10px 0 black;
+}
+
+.usernameButton {
+    background-color: transparent;
+    color:springgreen;
+    text-align: center;
+    display: flex;
+    font-size: 1.1em;
+    padding-right: 20px;
+    padding-left: 10px;
+    padding-bottom: 1px;
+    border: 1px solid black;
+    border-radius: 1em;
+}
+
+.usernameButton i {
+    position: absolute;
+    right: 1.1em;
+    top: 0.58em;
+}
+
+.usernameButton:hover {
+    background-color: darkslateblue;
+}
+
+.userDropDown {
+    position: absolute;
+    z-index: 4;
+    right:0;
+    padding-right: 15px;
+    background-color: dodgerblue;
+    text-align: center;
+    margin-top: 1.1em;
+    box-shadow: -5px 5px 5px 0 rgb(0, 0, 0, 0.3);
+}
+
+.signoutButton, .deleteButton, .changeModeButton {
+    background-color: transparent;
+    border: none;
+    font-size: 1.1em;
+}
+
+.deleteButton {
+    color:darkred;
+    padding:5px;
+    border-radius: 0.5em;
+    position: relative;
+    left: 5px;
+    margin-bottom: 5px;
+}
+
+.signoutButton, .changeModeButton {
+    color:darkslateblue;
+    padding:5px;
+    border-radius: 0.5em;
+}
+
+.signoutButton:hover, .deleteButton:hover, .changeModeButton:hover {
+    background-color: lightskyblue;
+}
+
+.deleteButton i {
+    position: relative;
+    right:3px;
+}
+
+.avatarContainer {
+    width: 30px;
+    height: 25px;
+    border: 1px solid black;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    background-color: rgb(83, 15, 180);
+}
+
+.avatar {
+    display:flex;
+    color:lightskyblue;
+    font-size: 1.1em;
+}

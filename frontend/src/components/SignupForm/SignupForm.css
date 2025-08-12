@@ -1,0 +1,124 @@
+.signupContainer {
+    display:flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap:10px;
+    margin-top: 0.9em;
+    margin-bottom: 0.9em;
+    margin-left:1em;
+}
+
+.signupForm {
+    background-color: rgba(255, 255, 255, 0.4);
+    display:flex;
+    flex-direction: column;
+    padding: 4em;
+    padding-top: 2em;
+    border: 2px darkmagenta solid;
+    border-radius: 2em;
+    box-shadow: 0 0 10px 0 black;
+}
+
+.signupForm h2 {
+    text-align: center;
+    margin-top: 0.1em;
+    font-weight: 500;
+    color:darkmagenta;
+}
+
+.signupForm label {
+    font-size: 1.1em;
+    color:darkmagenta;
+    padding-left:0.6em;
+}
+
+.signupForm .icon-user, .signupForm .icon-lock{
+    position: relative;
+    top:0;
+    bottom:0;
+    right:5px;
+    color:darkmagenta;
+}
+
+.signupForm .icon-envelope {
+    position: relative;
+    top:0;
+    bottom:0;
+    right:10px;
+    color:darkmagenta;
+}
+
+.signupForm .signupFooter {
+    margin-top: 3em;
+    font-size: 1.1em;
+    color:darkmagenta;
+}
+
+.signupForm .signupFooter .loginLink {
+    color:blue;
+}
+
+.signupForm .signupFooter .loginLink:hover {
+    color:dodgerblue;
+}
+
+.signupForm .signupSubmit {
+    margin-top: 1em;
+    text-align: center;
+}
+
+.signupForm .signupSubmit input {
+    color:darkmagenta;
+    width:5em;
+    height:2em;
+    font-size: 1.1em;
+    background-color:dodgerblue;
+    border: 1.5px solid darkmagenta;
+    border-radius: 2em;
+}
+
+.signupForm .signupSubmit input:hover {
+    background-color: aqua;
+}
+
+sup {
+    color:red;
+}
+
+.signupUsername, .signupPassword, .signupConfirm, .signupFirstname, .signupLastname {
+    width:15em;
+    border-radius: 0.4em;
+    border: 1px solid black;
+}
+
+.signupEmail {
+    position: relative;
+    right:5px;
+    width:15em;
+    border-radius: 0.4em;
+    border: 1px solid black;
+}
+
+.redInput {
+    width:15em;
+    border:1px solid red;
+    border-radius: 0.4em;
+}
+
+.redInputEmail {
+    position: relative;
+    right:5px;
+    width:15em;
+    border:1px solid red;
+    border-radius: 0.4em;
+}
+
+.signupSubmit input:hover {
+    background-color: aqua;
+}
+
+@media (max-width: 1200px) {
+    .signupForm {
+        background-color: rgba(255, 255, 255, 0.65);
+    }
+}

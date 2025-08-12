@@ -1,0 +1,22 @@
+.gameButtons {
+    display:flex;
+    flex-direction: row;
+    justify-content: space-evenly;
+    align-items: center;
+    height: 90vh;
+}
+
+.aiButton, .multiplayerButton {
+    padding:20px;
+    font-size: 1.1em;
+    border: 2px solid black;
+    box-shadow: 0 0 10px 0 black;
+    background-color:rgba(71, 61, 139, 0.897);
+    color:darkkhaki;
+    flex-basis: 8em;
+}
+
+.aiButton:hover, .multiplayerButton:hover {
+    background-color:darkkhaki;
+    color:darkslateblue;
+}

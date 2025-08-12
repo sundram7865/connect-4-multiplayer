@@ -1,0 +1,79 @@
+.loginContainer {
+    display:flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap:50px;
+    margin-top: 7.2em;
+
+}
+
+.loginForm {
+    background-color: rgba(255, 255, 255, 0.4);
+    display:flex;
+    flex-direction: column;
+    padding: 4em;
+    padding-top: 2em;
+    border: 2px darkmagenta solid;
+    border-radius: 2em;
+    box-shadow: 0 0 10px 0 black;
+}
+
+.loginForm h2 {
+    text-align: center;
+    margin-top: 0.1em;
+    font-weight: 500;
+    color:darkmagenta;
+}
+
+.loginForm label {
+    font-size: 1.1em;
+    color:darkmagenta;
+    padding-left:0.6em;
+}
+
+.loginForm .icon-user, .loginForm .icon-lock {
+    position: relative;
+    top:0;
+    bottom:0;
+    right:5px;
+    color:darkmagenta;
+}
+
+.loginForm .loginFooter {
+    margin-top: 3em;
+    font-size: 1.1em;
+    color:darkmagenta;
+}
+
+.loginForm .loginFooter .signupLink {
+    color:blue;
+}
+
+.loginForm .loginFooter .signupLink:hover {
+    color:dodgerblue;
+}
+
+.loginForm .loginSubmit {
+    margin-top: 1em;
+    text-align: center;
+}
+
+.loginForm .loginSubmit input {
+    color:darkmagenta;
+    width:5em;
+    height:2em;
+    font-size: 1.1em;
+    background-color:dodgerblue;
+    border: 1.5px solid darkmagenta;
+    border-radius: 2em;
+}
+
+.loginUsername, .loginPassword {
+    width:15em;
+    border-radius: 0.4em;
+    border: 1px solid black;
+}
+
+.loginSubmit input:hover {
+    background-color: aqua;
+}

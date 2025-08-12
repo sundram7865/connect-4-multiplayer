@@ -1,0 +1,36 @@
+.usernames {
+    display:flex;
+    justify-content: center;
+    background-color: transparent;
+    margin-top: 7px;
+    margin-bottom: -10px;
+}
+
+.usernames div {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    align-content: center;
+    border-radius: 0.7em;
+    gap: 60px;
+    padding: 10px;
+    background-color: rgba(65, 65, 232, 0.8);
+    position: relative;
+    z-index: -10;
+    padding-top: 2px;
+    padding-bottom: 5px;
+}
+
+.usernames div div {
+    background-color: transparent;
+    color: white;
+}
+
+.usernames div div div {
+    display: flex;
+    flex-direction: column;
+    gap:6px;
+    padding: 0;
+    background-color: transparent;
+}

@@ -1,0 +1,31 @@
+.playAgain, .noPlayAgain {
+    background-color: rgb(168, 208, 240);
+    border: 3px solid black;
+    position: absolute;
+    font-size: 1.2em;
+    padding: 20px;
+    border-radius: 1.1em;
+    box-shadow: 0 0 10px 0 black;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.playAgain ul {
+    flex-wrap: nowrap;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    text-align: center;
+}
+
+.playAgain ul li button {
+    margin: 10px;
+    margin-bottom: 0;
+}
+
+.noPlayAgain button {
+    margin: 15px;
+    margin-bottom: 0;
+}

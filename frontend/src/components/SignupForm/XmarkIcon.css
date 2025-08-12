@@ -1,0 +1,15 @@
+.xIcon {
+    position: relative;
+    top:0;
+    bottom:0;
+    left:5px;
+    color:red;
+}
+
+.xIconEmail {
+    position: relative;
+    top:0;
+    bottom:0;
+    left:0;
+    color:red;
+}
