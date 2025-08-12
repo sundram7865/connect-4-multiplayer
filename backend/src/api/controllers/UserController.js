@@ -1,118 +1,181 @@
-import { addUser, findUser , updateVerification, checkUser, deleteUser, 
-    createAvatar, deleteCookies } from '../services/UserService.js'
+import { 
+    addUser, findUser, checkUser, deleteUser, 
+    createAvatar, deleteCookies 
+} from '../services/UserService.js'
 import { removeAiGames, deleteGameData } from '../services/AiGameService.js'
 import { removeMultiplayerGames, deleteGameDataM } from '../services/MultiplayerGameService.js'
-import { v4 } from 'uuid'
-import nodemailer from 'nodemailer'
 
+// Helper for consistent error responses
+const errorResponse = (res, status, message) => {
+    return res.status(status).json({ success: false, message })
+}
 
+// Login without email verification check
+export const loginUser = async (req, res) => {
+    const { username, password } = req.body
 
-//handles the submission of the login form and checks if the user exists and sends a response to the client
-export const loginUser = async (req,res) => {
-    const {username,password} = req.body
+    try {
+        const user = await checkUser({ username, password })
+        
+        if (!user) {
+            return errorResponse(res, 401, 'Invalid credentials')
+        }
 
-    const user = await checkUser({username,password})
-    if(user!==null) {
-        if(user) {
+        // Regenerate session to prevent fixation
+        req.session.regenerate(async (err) => {
+            if (err) {
+                console.error('Session regeneration error:', err)
+                return errorResponse(res, 500, 'Login failed')
+            }
+
             req.session.username = username
             req.session.avatar = await createAvatar(username)
-            return res.json({ success: true, redirectUrl: '/home'})
-        }
-        else {
-            res.json({success: false, message: "You haven't verified your email!"})
-        }
-    }
-    else {
-        res.json({ success: false, message: 'Invalid credentials' })
+            req.session.userId = user.id 
+            
+            req.session.save((saveErr) => {
+                if (saveErr) {
+                    console.error('Session save error:', saveErr)
+                    return errorResponse(res, 500, 'Login failed')
+                }
+
+                res.cookie('connect4_sid', req.sessionID, {
+                    sameSite: 'none',
+                    secure: true,
+                    httpOnly: true,
+                    maxAge: 30 * 60 * 1000,
+                    domain: process.env.NODE_ENV === 'production' ? '.vercel.app' : undefined
+                })
+
+                return res.json({ 
+                    success: true, 
+                    redirectUrl: '/home',
+                    sessionId: req.sessionID 
+                })
+            })
+        })
+    } catch (error) {
+        console.error('Login error:', error)
+        errorResponse(res, 500, 'Internal server error')
     }
 }
 
-//handles the submission of the signup form and checks if the user does not exist already and sends a response to the client
-export const signupUser = async (req,res) => {
+// Signup without email verification token
+export const signupUser = async (req, res) => {
     const data = req.body
     
     try {
+        if (!data.firstname || !data.lastname) {
+            return errorResponse(res, 400, 'First and last name are required')
+        }
+
         const avatar = data.firstname.charAt(0).toUpperCase() + data.lastname.charAt(0).toUpperCase()
-        const token = v4()
-        const result = await addUser(data,avatar,token,false)
+        await addUser(data, avatar, null, true) // no token, set verified true immediately
 
-        res.json({ success: true })
+        return res.json({ success: true })
     } catch(error) {
-        if(error.message==="Invalid username") {
-            res.json({ success: false, message: 'Invalid username' })
-        } else if(error.message==="Invalid email") {
-            res.json({ success: false, message: 'Invalid email' })
+        console.error('Signup error:', error)
+        if (error.message === "Invalid username") {
+            errorResponse(res, 400, 'Invalid username')
+        } else if (error.message === "Invalid email") {
+            errorResponse(res, 400, 'Invalid email')
+        } else {
+            errorResponse(res, 500, 'Registration failed')
         }
     }
 }
 
-//handles the verification of the email
-export const verifyUser = async (req,res) => {
+// Removed verifyUser logic
+export const verifyUser = async (req, res) => {
+    return res.status(200).json({ success: true, message: 'Verification not required' })
+}
+
+// Session check
+export const userEntrance = async (req, res) => {
     try {
-        const user = await findUser(req.query.username)
-        if(user===null) {
-            res.json({success:false})
+        await deleteCookies({ onDelete: false, username: null })
+        
+        if (!req.session.username) {
+            return res.json({ authenticated: false })
         }
-        else {
-            if(user.getDataValue('token')===req.query.token) {
-                await updateVerification(req.query.username)
-                res.json({success:true})
+
+        req.session.reload(async (err) => {
+            if (err) {
+                console.error('Session reload error:', err)
+                return res.json({ authenticated: false })
             }
-            else {
-                res.json({success:false})
+
+            req.session.touch()
+            
+            const userExists = await findUser(req.session.username)
+            if (!userExists) {
+                req.session.destroy()
+                return res.json({ authenticated: false })
             }
-        }
-    }catch(error) {
-        console.log(error)
+
+            res.json({ 
+                authenticated: true,
+                username: req.session.username,
+                avatar: req.session.avatar
+            })
+        })
+    } catch (error) {
+        console.error('Entrance check error:', error)
+        res.json({ authenticated: false })
     }
 }
 
-//handles the path home and deletes the expired cookies and checks if the user is authenticated
-export const userEntrance = async (req,res) => {
-    await deleteCookies({onDelete: false, username: null})
-    if(req.session.username) {
-        req.session.touch()
-        return res.json({ authenticated : true, username: req.session.username, avatar: req.session.avatar})
-    }
-    else {
-        return res.json({ authenticated : false})
+// Logout
+export const signoutUser = async (req, res) => {
+    try {
+        await deleteGameData(req.sessionID)
+        await deleteGameDataM(req.sessionID)
+        
+        req.session.destroy((err) => {
+            if (err) {
+                console.error('Logout error:', err)
+                return errorResponse(res, 500, 'Logout failed')
+            }
+            
+            res.clearCookie('connect4_sid', {
+                domain: process.env.NODE_ENV === 'production' ? '.vercel.app' : undefined
+            })
+            return res.json({ success: true })
+        })
+    } catch (error) {
+        console.error('Signout error:', error)
+        errorResponse(res, 500, 'Logout failed')
     }
 }
 
-//handles the signout and destroy the cookies about this session
-export const signoutUser = async (req,res) => {
-    await deleteGameData(req.sessionID)
-    await deleteGameDataM(req.sessionID)
-    req.session.username=undefined
-    req.session.avatar=undefined
-    req.session.destroy((err) => {
-        if (err) {
-          console.error('Logout error:', err)
-          res.json({logout:false})
-        } else {
-          res.clearCookie('Connect4-sid')
-          res.json({logout:true})
+// Delete account
+export const destroyUser = async (req, res) => {
+    try {
+        if (!req.session.username) {
+            return errorResponse(res, 401, 'Not authenticated')
         }
-    })
-}
 
-//handles the deletion of the account and delete all the cookies about this username
-export const destroyUser = async (req,res) => {
-    await deleteGameData(req.sessionID)
-    await deleteGameDataM(req.sessionID)
-    await removeAiGames(req.session.username)
-    await removeMultiplayerGames(req.session.username)
-    await deleteUser(req.session.username)
-    await deleteCookies({onDelete: true, username: req.session.username})
-    req.session.username=undefined
-    req.session.avatar=undefined
-    req.session.destroy((err) => {
-        if (err) {
-          console.error('Logout error:', err)
-          res.json({logout:false})
-        } else {
-          res.clearCookie('Connect4-sid')
-          res.json({logout:true})
-        }
-    })
+        await Promise.all([
+            deleteGameData(req.sessionID),
+            deleteGameDataM(req.sessionID),
+            removeAiGames(req.session.username),
+            removeMultiplayerGames(req.session.username),
+            deleteUser(req.session.username),
+            deleteCookies({ onDelete: true, username: req.session.username })
+        ])
+
+        req.session.destroy((err) => {
+            if (err) {
+                console.error('Destroy error:', err)
+                return errorResponse(res, 500, 'Account deletion failed')
+            }
+            
+            res.clearCookie('connect4_sid', {
+                domain: process.env.NODE_ENV === 'production' ? '.vercel.app' : undefined
+            })
+            return res.json({ success: true })
+        })
+    } catch (error) {
+        console.error('Destroy error:', error)
+        errorResponse(res, 500, 'Account deletion failed')
+    }
 }
