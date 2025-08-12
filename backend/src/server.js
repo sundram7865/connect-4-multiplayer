@@ -18,9 +18,7 @@ const { Pool } = pg;
 // Neon DB connection
 const pool = new Pool({
     connectionString: process.env.DATABASE_URL,
-    ssl: {
-        rejectUnauthorized: false // Required for Neon
-    }
+    ssl: { rejectUnauthorized: false } // Required for Neon
 });
 
 const app = express();
@@ -35,6 +33,7 @@ const corsOptions = {
     optionsSuccessStatus: 200
 };
 app.use(cors(corsOptions));
+app.options('*', cors(corsOptions)); // Handle preflight requests
 
 // Middleware
 app.use(express.static('public'));
@@ -53,7 +52,7 @@ const sessionConfig = {
     }),
     resave: false,
     saveUninitialized: false,
-    name: "Connect4-sid",
+    name: "Connect4-sid", // One consistent cookie name
     rolling: true,
     cookie: {
         sameSite: "none",  // Needed for cross-site cookies
