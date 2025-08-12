@@ -5,7 +5,7 @@ import { useEffect } from 'react'
 import React from "react"
 import socketIOClient from 'socket.io-client'
 
-let socket = socketIOClient('http://localhost:5000',{transports: ['websocket', 'polling'], upgrade: false})
+let socket = socketIOClient('https://connect-4-multiplayer.vercel.app',{transports: ['websocket', 'polling'], upgrade: false})
 
 function App() {
     const location = useLocation()
