@@ -59,7 +59,7 @@ app.use(session({
     name: "Connect4-sid",
     rolling: true,
     cookie: {
-        sameSite: "lax",
+        sameSite: "none",
         secure: true, // set to true if using HTTPS in production
         maxAge: 1000 * 60 * 20 // 20 minutes
     }
