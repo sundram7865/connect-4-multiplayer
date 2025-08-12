@@ -26,19 +26,15 @@ const pool = new Pool({
 const app = express()
 const PORT = process.env.PORT || 5000
 
-// CORS setup
-app.options("*", cors({
+// Enhanced CORS setup
+const corsOptions = {
     origin: ['https://connect-4-multiplayer.vercel.app'],
-    methods: ["POST", "GET"],
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"],
+    allowedHeaders: ["Content-Type", "Authorization"],
     credentials: true,
     optionsSuccessStatus: 200
-}))
-app.use(cors({
-    origin: ['https://connect-4-multiplayer.vercel.app'],
-    methods: ["POST", "GET"],
-    credentials: true,
-    optionsSuccessStatus: 200
-}))
+}
+app.use(cors(corsOptions))
 
 // Middleware
 app.use(express.static('public'))
@@ -48,11 +44,12 @@ app.use(bodyParser.json())
 app.use(cookieParser())
 
 // Session configuration with Postgres store
-app.use(session({
+const sessionConfig = {
     secret: process.env.SESSION_SECRET,
     store: new PgSession({
         pool,
-        tableName: 'Session'
+        tableName: 'Session',
+        createTableIfMissing: true // Add this line
     }),
     resave: false,
     saveUninitialized: false,
@@ -60,10 +57,24 @@ app.use(session({
     rolling: true,
     cookie: {
         sameSite: "none",
-        secure: true, // set to true if using HTTPS in production
+        secure: true,
+        httpOnly: true, // Add this for security
         maxAge: 1000 * 60 * 20 // 20 minutes
     }
-}))
+}
+
+// For local testing without HTTPS
+if (process.env.NODE_ENV === 'development') {
+    sessionConfig.cookie.secure = false
+    sessionConfig.cookie.sameSite = 'lax'
+}
+
+app.use(session(sessionConfig))
+
+// Health check endpoint for Render
+app.get('/health', (req, res) => {
+    res.status(200).send('OK')
+})
 
 // Routes
 app.use("/user", UserRouter)
@@ -77,6 +88,7 @@ createSocket(server)
 server.listen(PORT, () => {
     console.log(`Server is open at ${PORT}`)
 })
+
 pool.connect()
     .then(client => {
         console.log('✅ Database connected successfully.');
